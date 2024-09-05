@@ -1,26 +1,30 @@
 import { Alert, Button, Label, Spinner, TextInput } from "flowbite-react";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-
+import { useSelector, useDispatch } from "react-redux";
+import {
+  signInStart,
+  signInSuccess,
+  signInFailure,
+} from "../redux/user/userSlice";
 export default function SignIn() {
-  const [formData, setFromData] = useState({});
-  const [error, setError] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [formData, setFormData] = useState({});
+  const dispatch = useDispatch();
+  const { loading, error: errorMessage } = useSelector((state) => state.user);
   const navigate = useNavigate();
-  const { username, email, password } = formData;
+  const { email, password } = formData;
 
   const handleChange = (e) => {
-    setFromData({ ...formData, [e.target.id]: e.target.value.trim() });
+    setFormData({ ...formData, [e.target.id]: e.target.value.trim() });
     console.log(formData);
   };
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!email || !password) {
-      return setError("please fill out all fields.");
+      dispatch(signInFailure("please fill out all fields"));
     }
     try {
-      setLoading(true);
-      setError(null);
+      dispatch(signInStart());
       const res = await fetch("/api/auth/signin", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -28,16 +32,14 @@ export default function SignIn() {
       });
       const data = await res.json();
       if (data.success === false) {
-        setLoading(false);
-        return setError(data.message);
+        dispatch(signInFailure(data.message));
       }
-      setLoading(false);
       if (res.ok) {
+        dispatch(signInSuccess(data));
         navigate("/");
       }
     } catch (error) {
-      setError(error.message);
-      setLoading(false);
+      dispatch(signInFailure(error.message));
     }
   };
   return (
@@ -98,9 +100,9 @@ export default function SignIn() {
               Sign Up
             </Link>
           </div>
-          {error && (
+          {errorMessage && (
             <Alert className="mt-5" color="failure">
-              {error}
+              {errorMessage}
             </Alert>
           )}
         </div>
