@@ -11,6 +11,7 @@ import {
   RouterProvider,
 } from "react-router-dom";
 import MainLayOut from "./layouts/MainLayOut";
+import PrivateRoute from "./components/PrivateRoute";
 
 export default function App() {
   const router = createBrowserRouter(
@@ -20,7 +21,9 @@ export default function App() {
         <Route path="/about" element={<About />} />
         <Route path="/sign-in" element={<SignIn />} />
         <Route path="/sign-up" element={<SignUp />} />
-        <Route path="/dashboard" element={<Dashboard />} />
+        <Route element={<PrivateRoute />}>
+          <Route path="/dashboard" element={<Dashboard />} />
+        </Route>
         <Route path="/projects" element={<Projects />} />
       </Route>
     )
