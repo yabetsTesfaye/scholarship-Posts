@@ -13,7 +13,7 @@ export const signup = async (req, res, next) => {
     email === "" ||
     password === ""
   ) {
-    next(errorHandler(400, "please fill all thus fields"));
+    return next(errorHandler(400, "please fill all thus fields"));
   }
 
   const hashedPassword = bcryptjs.hashSync(password, 10);
@@ -35,7 +35,7 @@ export const signup = async (req, res, next) => {
 export const signin = async (req, res, next) => {
   const { email, password } = req.body;
   if (!email || !password || email === "" || password === "") {
-    next(errorHandler(400, "please fill all thus fields"));
+    return next(errorHandler(400, "please fill all thus fields"));
   }
 
   try {
@@ -77,7 +77,7 @@ export const google = async (req, res, next) => {
       const { password, ...rest } = user._doc;
       res
         .status(200)
-        .cookie("acess_token", token, {
+        .cookie("Acess_Token", token, {
           httpOnly: true,
         })
         .json(rest);
